@@ -26,7 +26,7 @@ def get_users(userId):
         else:
             # If userid is none, we get all information on all users, in both cases we save the data to a variable, change it to an object above, or list of objects below before disconnecting and returning the data
             cursor.execute(
-                "SELECT * FROM user")
+                "SELECT id, email, username FROM users")
             users = cursor.fetchall()
             for user in users:
                 users_objects.append(
