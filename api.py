@@ -1,6 +1,7 @@
 from flask import Flask
 import Endpoints.users as users
 import Endpoints.login as login
+import Endpoints.characters as characters
 
 import sys
 app = Flask(__name__)
@@ -43,6 +44,13 @@ def delete_login():
 @app.post('/api/login')
 def post_login():
     return login.post()
+
+######## CHARACTER ENDPOINT #######
+
+
+@app.get('/api/characters')
+def get_chars():
+    return characters.get()
 
 
 # Checking to see if a mode was passed to the script
