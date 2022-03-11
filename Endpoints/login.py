@@ -9,7 +9,7 @@ import json
 def delete():
     success = False
     try:
-        logintoken = request.json['loginToken']
+        logintoken = request.cookies['logintoken']
         success = ul.delete_login(logintoken)
     except:
         return Response("Something went wrong with logging out", mimetype="application/json", status=400)

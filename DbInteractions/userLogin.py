@@ -51,7 +51,7 @@ def post_login(email, username, pass_hash):
         conn.commit()
         # Select statement to grab information about the user, aswell as the just created login token, save data to variable change it to an object and return the data
         cursor.execute(
-            "SELECT users.id, email, username, loginToken FROM users inner join user_session on users.id = user_session.userId WHERE users.id = ?", [userId])
+            "SELECT users.id, email, username, loginToken FROM users inner join user_session on users.id = user_session.userId WHERE users.id = ? and loginToken = ?", [userId, token])
         user = cursor.fetchone()
         user = {
             'userId': user[0],

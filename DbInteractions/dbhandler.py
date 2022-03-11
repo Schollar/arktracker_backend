@@ -91,3 +91,26 @@ def get_userId(logintoken):
         print("Something unexpected went wrong")
     db_disconnect(conn, cursor)
     return userId
+
+
+def validate_login_token(logintoken):
+    conn, cursor = db_connect()
+    try:
+        # Select statement to get userId based off logintoken.
+        cursor.execute(
+            "SELECT logintoken FROM user_session WHERE logintoken = ?", [logintoken])
+        token = cursor.fetchone()
+    except db.OperationalError:
+        traceback.print_exc()
+        print('Something went  wrong with the db!')
+    except db.ProgrammingError:
+        traceback.print_exc()
+        print('Error running DB query')
+    except:
+        traceback.print_exc()
+        print("Something unexpected went wrong")
+    db_disconnect(conn, cursor)
+    if(token != None):
+        return True
+    else:
+        return False

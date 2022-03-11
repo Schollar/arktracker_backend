@@ -1,7 +1,9 @@
-from flask import Flask
+from flask import Flask, request, Response
 import Endpoints.users as users
 import Endpoints.login as login
 import Endpoints.characters as characters
+import DbInteractions.dbhandler as dbh
+
 
 import sys
 app = Flask(__name__)
@@ -11,32 +13,54 @@ app = Flask(__name__)
 # information from the actual function that is imported and called from another file.
 # All endpoints are split up into their own respective files for organizational sake.
 
+
+@app.before_request
+def validate_token():
+    if(request.method.lower() == 'options'):
+        return
+    if(request.endpoint in app.view_functions):
+        if(hasattr(app.view_functions[request.endpoint], 'must_authenticate')):
+            success = dbh.validate_login_token(
+                request.cookies.get('logintoken'))
+            if(success == False):
+                return Response('Invalid Login Token', mimetype="plain/text", status=403)
+
+
+def authenticate(endpoint):
+    endpoint.must_authenticate = True
+    return endpoint
+
 ## USER ENDPOINT ##
-
-
-@app.get('/api/users')
-def get_users():
-    return users.get()
-
-
-@app.patch('/api/users')
-def patch_users():
-    return users.patch()
-
-
-@app.delete('/api/users')
-def delete_user():
-    return users.delete()
 
 
 @app.post('/api/users')
 def post_user():
     return users.post()
 
+
+@app.get('/api/users')
+@authenticate
+def get_users():
+    return users.get()
+
+
+@app.patch('/api/users')
+@authenticate
+def patch_users():
+    return users.patch()
+
+
+@app.delete('/api/users')
+@authenticate
+def delete_user():
+    return users.delete()
+
+
 ######## LOGIN ENDPOINT #######
 
 
 @app.delete('/api/login')
+@authenticate
 def delete_login():
     return login.delete()
 
@@ -44,11 +68,11 @@ def delete_login():
 @app.post('/api/login')
 def post_login():
     return login.post()
-
 ######## CHARACTER ENDPOINT #######
 
 
 @app.get('/api/characters')
+@authenticate
 def get_chars():
     return characters.get()
 

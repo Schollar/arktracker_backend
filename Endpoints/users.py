@@ -37,7 +37,7 @@ def patch():
     user_json = None
     success = False
     try:
-        loginToken = request.json['loginToken']
+        loginToken = request.cookies['logintoken']
         email = request.json.get('email')
         username = request.json.get('username')
         success, user = ue.patch_user(
@@ -57,7 +57,7 @@ def patch():
 def delete():
     success = False
     try:
-        logintoken = request.json['loginToken']
+        logintoken = request.cookies['logintoken']
         password = request.json['password']
         pass_hash = dbh.get_password(password, logintoken=logintoken)
         success = ue.delete_user(logintoken, pass_hash)
