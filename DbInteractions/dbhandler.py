@@ -36,6 +36,9 @@ def db_disconnect(conn, cursor):
 
 
 def get_password(password, email=None, username=None, logintoken=None):
+    if(password == ''):
+        db_disconnect(conn, cursor)
+        return False
     salt = None
     pass_hash = None
     conn, cursor = db_connect()
@@ -52,6 +55,7 @@ def get_password(password, email=None, username=None, logintoken=None):
                 "SELECT salt FROM users  WHERE username = ?", [username])
         # After one of the three if statements above has ran, we select the salt, append it to the password and then get the hashed password.
         salt = cursor.fetchone()
+
         password = salt[0] + password
         pass_hash = hashlib.sha512(password.encode()).hexdigest()
     except db.OperationalError:
@@ -65,7 +69,10 @@ def get_password(password, email=None, username=None, logintoken=None):
         print("Something unexpected went wrong")
     # Disconnect and return hashed+salted password
     db_disconnect(conn, cursor)
-    return pass_hash
+    if(salt == None):
+        return False
+    else:
+        return pass_hash
 
 # Function that will get a userId from the logintoken passed to it.
 

@@ -34,8 +34,8 @@ def post():
             email, username, pass_hash)
         user_json = json.dumps(user, default=str)
     except:
-        return Response("Something went wrong logging in.", mimetype="application/json", status=400)
+        return Response("Something went wrong logging in.", mimetype="application/json", status=403)
     if(success):
         return Response(user_json, mimetype="application/json", status=200)
     else:
-        return Response("Something went wrong logging in.", mimetype="application/json", status=400)
+        return Response("Something went wrong logging in.", mimetype="application/json", status=403)

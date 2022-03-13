@@ -38,6 +38,7 @@ def post_login(email, username, pass_hash):
             cursor.execute(
                 "SELECT users.id FROM users WHERE email = ? and password = ?", [email, pass_hash])
             userId = cursor.fetchone()
+
             userId = userId[0]
         elif(username != None):
             cursor.execute(
@@ -53,6 +54,9 @@ def post_login(email, username, pass_hash):
         cursor.execute(
             "SELECT users.id, email, username, loginToken FROM users inner join user_session on users.id = user_session.userId WHERE users.id = ? and loginToken = ?", [userId, token])
         user = cursor.fetchone()
+        if(user == None):
+            dbh.db_disconnect(conn, cursor)
+            return False
         user = {
             'userId': user[0],
             'email': user[1],
@@ -69,4 +73,7 @@ def post_login(email, username, pass_hash):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True, user
+    if(userId == None):
+        return False, None
+    else:
+        return True, user

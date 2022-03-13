@@ -118,7 +118,10 @@ def post_user(email, username, pass_hash, salt):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True, user
+    if(user == []):
+        return False, None
+    else:
+        return True, user
 
 # Function that will delete a user. Takes in login token and hashed password as arguments
 
