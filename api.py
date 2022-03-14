@@ -1,8 +1,8 @@
-from flask import Flask, request, Response
+from flask import Flask
 import Endpoints.users as users
 import Endpoints.login as login
 import Endpoints.characters as characters
-import DbInteractions.dbhandler as dbh
+import Endpoints.tasks as tasks
 
 
 import sys
@@ -75,6 +75,14 @@ def post_login():
 @authenticate
 def get_chars():
     return characters.get()
+
+###TASKS ENDPOINT###
+
+
+@app.get('/api/character-tasks')
+@authenticate
+def get_tasks():
+    return tasks.get()
 
 
 # Checking to see if a mode was passed to the script

@@ -18,8 +18,6 @@ def get_characters(userId):
                 'class': char[2],
                 'username': char[3]
             })
-        dbh.db_disconnect(conn, cursor)
-        return True, user_characters
     except db.OperationalError:
         traceback.print_exc()
         print('Something went wrong with the db!')
@@ -29,3 +27,5 @@ def get_characters(userId):
     except:
         traceback.print_exc()
         print("Something unexpected went wrong")
+    dbh.db_disconnect(conn, cursor)
+    return True, user_characters
