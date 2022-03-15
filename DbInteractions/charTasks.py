@@ -45,3 +45,34 @@ def get_tasks(charId):
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
     return True, user_tasks
+
+
+def post_task(userId, taskname, taskdescription, tasktype, charId):
+    conn, cursor = dbh.db_connect()
+    try:
+        # Select statement to get task information, as well as character info. Where statement checks to get char DAILY tasks of charId passed to it, where started at is before the next day at 5AM. Task type must be daily and completed at must be null so task is still in progress
+        cursor.execute(
+            "INSERT INTO user_tasks (name, description, type, userId) VALUES (?, ?, ?, ?)", [taskname, taskdescription, tasktype, userId])
+        conn.commit()
+        cursor.execute(
+            "SELECT id from user_tasks WHERE name = ? and description = ? and userId = ?", [
+                taskname, taskdescription, userId]
+        )
+        taskId = cursor.fetchone()
+        taskId = taskId[0]
+        cursor.execute(
+            "INSERT INTO task_actions (characterId, user_taskId) VALUES (?, ?)", [
+                charId, taskId]
+        )
+        conn.commit()
+    except db.OperationalError:
+        traceback.print_exc()
+        print('Something went wrong with the db!')
+    except db.ProgrammingError:
+        traceback.print_exc()
+        print('Error running DB query')
+    except:
+        traceback.print_exc()
+        print("Something unexpected went wrong")
+    dbh.db_disconnect(conn, cursor)
+    return True

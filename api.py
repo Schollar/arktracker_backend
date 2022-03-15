@@ -76,13 +76,19 @@ def post_login():
 def get_chars():
     return characters.get()
 
-###TASKS ENDPOINT###
+###CHARACTER TASKS ENDPOINT###
 
 
 @app.get('/api/character-tasks')
 @authenticate
 def get_tasks():
     return tasks.get()
+
+
+@app.post('/api/character-tasks')
+@authenticate
+def post_task():
+    return tasks.post()
 
 
 # Checking to see if a mode was passed to the script
