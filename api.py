@@ -1,9 +1,9 @@
-from flask import Flask
+from flask import Flask, request, Response
 import Endpoints.users as users
 import Endpoints.login as login
 import Endpoints.characters as characters
 import Endpoints.tasks as tasks
-
+import DbInteractions.dbhandler as dbh
 
 import sys
 app = Flask(__name__)
@@ -14,16 +14,16 @@ app = Flask(__name__)
 # All endpoints are split up into their own respective files for organizational sake.
 
 
-# @app.before_request
-# def validate_token():
-#     if(request.method.lower() == 'options'):
-#         return
-#     if(request.endpoint in app.view_functions):
-#         if(hasattr(app.view_functions[request.endpoint], 'must_authenticate')):
-#             success = dbh.validate_login_token(
-#                 request.cookies.get('logintoken'))
-#             if(success == False):
-#                 return Response('Invalid Login Token', mimetype="plain/text", status=403)
+@app.before_request
+def validate_token():
+    if(request.method.lower() == 'options'):
+        return
+    if(request.endpoint in app.view_functions):
+        if(hasattr(app.view_functions[request.endpoint], 'must_authenticate')):
+            success = dbh.validate_login_token(
+                request.cookies.get('logintoken'))
+            if(success == False):
+                return Response('Invalid Login Token', mimetype="plain/text", status=403)
 
 
 def authenticate(endpoint):
