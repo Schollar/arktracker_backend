@@ -20,7 +20,6 @@ def get():
 
 
 def post():
-    task_json = None
     success = False
     try:
         userId = request.json['userId']
@@ -30,6 +29,19 @@ def post():
         charId = request.json['charId']
         success = ct.post_task(
             userId, taskname, taskdescription, tasktype, charId)
+    except:
+        return Response("Something went wrong getting user information", mimetype="application/json", status=400)
+    if(success):
+        return Response("New task added.", mimetype="plain/text", status=200)
+    else:
+        return Response("Something went wrong getting user information", mimetype="application/json", status=400)
+
+
+def delete():
+    success = False
+    try:
+        taskId = request.json['taskId']
+        success = ct.delete_task(taskId)
     except:
         return Response("Something went wrong getting user information", mimetype="application/json", status=400)
     if(success):

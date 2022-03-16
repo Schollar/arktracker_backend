@@ -91,6 +91,12 @@ def post_task():
     return tasks.post()
 
 
+@app.delete('/api/character-tasks')
+@authenticate
+def delete_task():
+    return tasks.delete()
+
+
 # Checking to see if a mode was passed to the script
 if(len(sys.argv) > 1):
     mode = sys.argv[1]
