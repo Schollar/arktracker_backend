@@ -21,8 +21,6 @@ def get_users(userId):
                 'email': users[1],
                 'username': users[2]
             }
-            dbh.db_disconnect(conn, cursor)
-            return True, users
         else:
             # If userid is none, we get all information on all users, in both cases we save the data to a variable, change it to an object above, or list of objects below before disconnecting and returning the data
             cursor.execute(
@@ -35,8 +33,6 @@ def get_users(userId):
                         'email': user[1],
                         'username': user[2]
                     })
-            dbh.db_disconnect(conn, cursor)
-            return True, users_objects
     except db.OperationalError:
         traceback.print_exc()
         print('Something went wrong with the db!')
@@ -46,6 +42,11 @@ def get_users(userId):
     except:
         traceback.print_exc()
         print("Something unexpected went wrong")
+    dbh.db_disconnect(conn, cursor)
+    if(userId != None):
+        return True, users
+    else:
+        return True, users_objects
 
 # Function that will change information based on if the values of the arguments are None or not, we check one by one and update one by one, which is less than ideal.
 
