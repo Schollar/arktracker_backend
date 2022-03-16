@@ -97,6 +97,12 @@ def delete_task():
     return tasks.delete()
 
 
+@app.patch('/api/character-tasks')
+@authenticate
+def patch_task():
+    return tasks.patch()
+
+
 # Checking to see if a mode was passed to the script
 if(len(sys.argv) > 1):
     mode = sys.argv[1]
