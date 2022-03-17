@@ -76,6 +76,12 @@ def post_login():
 def get_chars():
     return characters.get()
 
+
+@app.post('/api/characters')
+@authenticate
+def add_char():
+    return characters.post()
+
 ###CHARACTER TASKS ENDPOINT###
 
 
