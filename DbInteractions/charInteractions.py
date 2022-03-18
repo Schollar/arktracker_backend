@@ -66,3 +66,33 @@ def add_character(userId, charName, charClass):
         return False
     else:
         return True, character
+
+
+def remove_character(userId, charName):
+    charId = None
+    conn, cursor = dbh.db_connect()
+    try:
+        # Grab the charId to return to make things easy on the front end to remove character without running another request
+        cursor.execute(
+            "SELECT id FROM characters WHERE userId = ? and name = ?", [userId, charName])
+        charId = cursor.fetchone()
+        charId = charId[0]
+
+        cursor.execute("DELETE FROM characters WHERE name = ? and userId = ?", [
+                       charName, userId])
+        rowcount = cursor.rowcount
+        conn.commit()
+    except db.OperationalError:
+        traceback.print_exc()
+        print('Something went wrong with the db!')
+    except db.ProgrammingError:
+        traceback.print_exc()
+        print('Error running DB query')
+    except:
+        traceback.print_exc()
+        print("Something unexpected went wrong")
+    dbh.db_disconnect(conn, cursor)
+    if(rowcount < 1):
+        return False
+    else:
+        return True, charId

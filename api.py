@@ -3,6 +3,7 @@ import Endpoints.users as users
 import Endpoints.login as login
 import Endpoints.characters as characters
 import Endpoints.tasks as tasks
+import Endpoints.stats as stats
 import DbInteractions.dbhandler as dbh
 
 import sys
@@ -82,6 +83,12 @@ def get_chars():
 def add_char():
     return characters.post()
 
+
+@app.delete('/api/characters')
+@authenticate
+def remove_char():
+    return characters.delete()
+
 ###CHARACTER TASKS ENDPOINT###
 
 
@@ -107,6 +114,14 @@ def delete_task():
 @authenticate
 def patch_task():
     return tasks.patch()
+
+## TASK STATS ENDPOINT (USER TOTAL COMPLETION)##
+
+
+@app.get('/api/task-stats')
+@authenticate
+def get_stats():
+    return stats.get()
 
 
 # Checking to see if a mode was passed to the script
