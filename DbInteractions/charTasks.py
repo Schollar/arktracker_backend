@@ -75,6 +75,13 @@ def post_task(userId, taskname, taskdescription, tasktype, charId):
                 charId, task['taskId']]
         )
         conn.commit()
+        # Selecting the id from task actions table to return as the UserId as the delete statement uses that Id opposed to the one im passing.
+        cursor.execute(
+            "SELECT id FROM task_actions WHERE  user_taskId = ?", [
+                task['taskId']]
+        )
+        newId = cursor.fetchone()
+        task['taskId'] = newId[0]
     except db.OperationalError:
         traceback.print_exc()
         print('Something went wrong with the db!')
