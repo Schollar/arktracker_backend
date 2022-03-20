@@ -10,9 +10,9 @@ def get_stats(userId):
     user_tasks['failed'] = []
     conn, cursor = dbh.db_connect()
     try:
-        # Select statement to get task information, as well as character info. Where statement checks to get char DAILY tasks of charId passed to it, where started at is greater than the current day minus one at 5am. Task type must be daily and completed at must be null so task is still in progress
+        # Select statement to get tasks completed in the last 7 days.
         cursor.execute(
-            "SELECT task_actions.id, user_tasks.name, user_tasks.description, user_tasks.type, started_at, completed_at FROM task_actions inner join characters on characters.id = characterId inner join users on characters.userId = users.id inner join user_tasks on user_taskId = user_tasks.id WHERE users.id = ? and completed_at is not NULL", [userId])
+            "SELECT task_actions.id, user_tasks.name, user_tasks.description, user_tasks.type, started_at, completed_at FROM task_actions inner join characters on characters.id = characterId inner join users on characters.userId = users.id inner join user_tasks on user_taskId = user_tasks.id WHERE users.id = ? and completed_at >= (CURDATE() - INTERVAL 7 DAY)", [userId])
         completed_tasks = cursor.fetchall()
         for task in completed_tasks:
             user_tasks['completed'].append({
