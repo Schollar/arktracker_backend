@@ -50,8 +50,8 @@ def delete():
         success, charId = ci.remove_character(userId, charName)
         charId_json = json.dumps(charId, default=str)
     except:
-        return Response("Something went wrong adding a character", mimetype="application/json", status=400)
+        return Response("Something went wrong removing a character", mimetype="application/json", status=400)
     if(success):
         return Response(charId_json, mimetype="application/json", status=200)
     else:
-        return Response("Something went wrong adding a character", mimetype="application/json", status=400)
+        return Response("Something went wrong removing a character", mimetype="application/json", status=400)
