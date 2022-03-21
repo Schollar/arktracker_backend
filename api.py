@@ -14,6 +14,8 @@ app = Flask(__name__)
 # information from the actual function that is imported and called from another file.
 # All endpoints are split up into their own respective files for organizational sake.
 
+# Before requests that are decorated with @authenticate, this will grab the login token from the cookie and verify the logintoken exists and is valid. If so it continues on to the endpoint requested, if not it errors before getting to the endpoint
+
 
 @app.before_request
 def validate_token():

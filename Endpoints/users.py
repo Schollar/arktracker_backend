@@ -11,7 +11,7 @@ import hashlib
 def create_salt():
     return secrets.token_urlsafe(10)
 
-# This endpoint takes in an optional user id. If no Id is sent it will get ALL users from DB back. If ID is sent only info about that user is sent back.
+# Get endpoint to get user info, requires userId
 # If success returns True, return converted data in the reponse
 
 
@@ -19,7 +19,7 @@ def get():
     users_json = None
     success = False
     try:
-        user_id = request.args.get('userId')
+        user_id = request.args['userId']
         success, user_list = ue.get_users(user_id)
         users_json = json.dumps(user_list, default=str)
     except:
@@ -29,19 +29,23 @@ def get():
     else:
         return Response("Something went wrong getting user information", mimetype="application/json", status=400)
 
-# This endpoint will update user information based on what is sent to it. All optional except for logintoken which is required, you can send info seperatly or all at once.
-# Convert the returned data to json, and if successful return the converted data in the response
+# This endpoint will update user information based on what is sent to it. returns updated user info in response
 
 
 def patch():
     user_json = None
     success = False
     try:
-        loginToken = request.cookies['logintoken']
+        userId = request.json['userId']
         email = request.json.get('email')
         username = request.json.get('username')
-        success, user = ue.patch_user(
-            loginToken, email, username)
+        password = request.json.get('password')
+        # Checking to see if user is changing password, if not empty go through the salt and hash process
+        if(password != None and password != ''):
+            salt = create_salt()
+            password = salt + password
+            password = hashlib.sha512(password.encode()).hexdigest()
+        success, user = ue.patch_user(userId, email, username, password, salt)
         user_json = json.dumps(user, default=str)
     except:
         return Response("Something went wrong editing user information", mimetype="application/json", status=400)
@@ -50,8 +54,7 @@ def patch():
     else:
         return Response("Something went wrong editing user information", mimetype="application/json", status=400)
 
-# This endpoint will delete a user from the DB. it takes in a password and login token, and if matching will return nothing indicating user no longer exits on planet.
-# Use the helper get password function to get hashed+salted password. If dbinteractions function returns success as True, return a response with None.
+# Endpoint to delete a user. NOT CURRENTLY IN USE
 
 
 def delete():
@@ -68,7 +71,7 @@ def delete():
     else:
         return Response("Something went wrong deleting this user", mimetype="application/json", status=400)
 
-# This endpoint creates a new user. It takes in a bunch of data that is required and two optional peices of data. It also creates a salt for the user and hashes the salted password.
+# This endpoint creates a new user. Takes in requires data. It also creates a salt for the user and hashes the salted password.
 # Convert the returned data to json, return the converted data in the response if success returned as true.
 
 

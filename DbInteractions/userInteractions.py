@@ -3,36 +3,21 @@ import DbInteractions.dbhandler as dbh
 import DbInteractions.userLogin as ul
 import traceback
 
-# Function that returns all users or a specific user based on the userId value
+# Function that returns the information about our user
 
 
 def get_users(userId):
-    users = []
+    user = {}
     conn, cursor = dbh.db_connect()
-    users_objects = []
     try:
-        # Checking to see if userId is none, if not we return the information about that specific user
-        if(userId != None):
-            cursor.execute(
-                "SELECT id, email, username FROM users WHERE id = ?", [userId])
-            users = cursor.fetchone()
-            users = {
-                'userId': users[0],
-                'email': users[1],
-                'username': users[2]
-            }
-        else:
-            # If userid is none, we get all information on all users, in both cases we save the data to a variable, change it to an object above, or list of objects below before disconnecting and returning the data
-            cursor.execute(
-                "SELECT id, email, username FROM users")
-            users = cursor.fetchall()
-            for user in users:
-                users_objects.append(
-                    {
-                        'userId': user[0],
-                        'email': user[1],
-                        'username': user[2]
-                    })
+        cursor.execute(
+            "SELECT id, email, username FROM users WHERE id = ?", [userId])
+        users = cursor.fetchone()
+        users = {
+            'userId': users[0],
+            'email': users[1],
+            'username': users[2]
+        }
     except db.OperationalError:
         traceback.print_exc()
         print('Something went wrong with the db!')
@@ -43,29 +28,30 @@ def get_users(userId):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    if(userId != None):
-        return True, users
-    else:
-        return True, users_objects
+    return True, user
 
 # Function that will change information based on if the values of the arguments are None or not, we check one by one and update one by one, which is less than ideal.
 
 
-def patch_user(loginToken, email, username):
+def patch_user(userId, email, username, password, salt):
     user = []
     conn, cursor = dbh.db_connect()
     try:
         if(email != None):
             cursor.execute(
-                "UPDATE users inner join user_session on users.id = user_session.userId SET email = ? WHERE logintoken = ?", [email, loginToken])
+                "UPDATE users SET email = ? WHERE users.id = ?", [email, userId])
             conn.commit()
         if(username != None):
             cursor.execute(
-                "UPDATE users inner join user_session on users.id = user_session.userId SET username = ? WHERE logintoken = ?", [username, loginToken])
+                "UPDATE users SET username = ? WHERE users.id = ?", [username, userId])
+            conn.commit()
+        if(password != None):
+            cursor.execute(
+                "UPDATE users SET password = ?, salt = ? WHERE users.ud = ?", [password, salt, userId])
             conn.commit()
         # After all updates and commits are done, a select statement runs to get the information on the newly updated user. Save the data to a variable and change it to an object before disconnecting and returning the data
         cursor.execute(
-            "SELECT users.id, email, username FROM users inner join user_session on users.id = user_session.userId WHERE logintoken = ?", [loginToken])
+            "SELECT users.id, email, username FROM users WHERE users.id = ?", [userId])
         user = cursor.fetchone()
         user = {
             'userId': user[0],
@@ -119,12 +105,13 @@ def post_user(email, username, pass_hash, salt):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
+    # If user is empty, something went wrong. If not return the user.
     if(user == []):
         return False, None
     else:
         return True, user
 
-# Function that will delete a user. Takes in login token and hashed password as arguments
+# Function that will delete a user. Takes in login token and hashed password as arguments NOT USED AT THE MOMENT
 
 
 def delete_user(loginToken, pass_hash):

@@ -14,6 +14,7 @@ def get_tasks(charId):
         cursor.execute(
             "SELECT task_actions.id, user_tasks.name, user_tasks.description, user_tasks.type, started_at FROM task_actions inner join user_tasks on user_taskId = user_tasks.id WHERE task_actions.characterId = ? and started_at > DATE_ADD(CURDATE() -1 , INTERVAL '05:00' HOUR_MINUTE) and type = 'Daily' and completed_at is NULL", [charId])
         daily_tasks = cursor.fetchall()
+        # Converting data to object and appending to the daily list
         for task in daily_tasks:
             user_tasks['daily'].append({
                 'taskId': task[0],
@@ -26,6 +27,7 @@ def get_tasks(charId):
         cursor.execute(
             "SELECT task_actions.id, user_tasks.name, user_tasks.description, user_tasks.type, started_at FROM task_actions inner join user_tasks on user_taskId = user_tasks.id WHERE task_actions.characterId = ? and started_at > CURDATE() - interval (7 + 3 - weekday(CURDATE())) % 7 day and type = 'Weekly' and completed_at is NULL", [charId])
         weekly_tasks = cursor.fetchall()
+        # Converting data to object and appending to the weekly list
         for task in weekly_tasks:
             user_tasks['weekly'].append({
                 'taskId': task[0],
@@ -55,10 +57,12 @@ def post_task(userId, taskname, taskdescription, tasktype, charId):
         cursor.execute(
             "INSERT INTO user_tasks (name, description, type, userId) VALUES (?, ?, ?, ?)", [taskname, taskdescription, tasktype, userId])
         conn.commit()
+        # Grabbing the latest Id incase this user has the same tasks from previous days/weeks
+        taskId = cursor.lastrowid
         # Select statement to select the task just inserted to return it.
         cursor.execute(
-            "SELECT id, name, description, type, userId from user_tasks WHERE name = ? and description = ? and userId = ?", [
-                taskname, taskdescription, userId]
+            "SELECT id, name, description, type, userId from user_tasks WHERE id = ?", [
+                taskId]
         )
         task = cursor.fetchone()
         # Setting the task as an object

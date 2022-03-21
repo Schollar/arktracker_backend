@@ -2,7 +2,7 @@ from flask import request, Response
 import DbInteractions.charTasks as ct
 import json
 
-# Function that takes in a characterId to get that chars tasks. Returns Object with lists(arrays) of tasks as key value pairs daily, weekly
+# Function that requires a characterId to get that chars tasks. Returns Object with lists(arrays) of tasks as key value pairs daily, weekly
 
 
 def get():
@@ -13,11 +13,11 @@ def get():
         success, task_list = ct.get_tasks(charId)
         char_json = json.dumps(task_list, default=str)
     except:
-        return Response("Something went wrong getting user information", mimetype="application/json", status=400)
+        return Response("Something went wrong getting character tasks", mimetype="application/json", status=400)
     if(success):
         return Response(char_json, mimetype="application/json", status=200)
     else:
-        return Response("Something went wrong getting user information", mimetype="application/json", status=400)
+        return Response("Something went wrong getting character tasks", mimetype="application/json", status=400)
 
 # Function that takes in a bunch of user required input to post a new task for a character. return newly added task in response
 
@@ -35,11 +35,11 @@ def post():
             userId, taskname, taskdescription, tasktype, charId)
         task_json = json.dumps(task, default=str)
     except:
-        return Response("Something went wrong getting user information", mimetype="application/json", status=400)
+        return Response("Something went wrong creating a new task", mimetype="application/json", status=400)
     if(success):
         return Response(task_json, mimetype="application/json", status=200)
     else:
-        return Response("Something went wrong getting user information", mimetype="application/json", status=400)
+        return Response("Something went wrong creating a new task", mimetype="application/json", status=400)
 
 
 # Delete function that requires a taskId to be deleted. If success comes back as true, return a plain text response confirming.
@@ -56,7 +56,7 @@ def delete():
     else:
         return Response("Something went wrong deleting the task", mimetype="application/json", status=400)
 
-# Patch function that takes in a taskId. If success returns as true, ##TODO return completed task in response
+# Patch function that takes in a taskId. If success returns as true. return completed task in response
 
 
 def patch():
@@ -67,8 +67,8 @@ def patch():
         success, task = ct.patch_task(taskId)
         task_json = json.dumps(task, default=str)
     except:
-        return Response("Something went wrong getting user information", mimetype="application/json", status=400)
+        return Response("Something went wrong updating the task", mimetype="application/json", status=400)
     if(success):
         return Response(task_json, mimetype="application/json", status=200)
     else:
-        return Response("Something went wrong getting user information", mimetype="application/json", status=400)
+        return Response("Something went wrong updating the task", mimetype="application/json", status=400)

@@ -2,6 +2,8 @@ from flask import request, Response
 import json
 import DbInteractions.charInteractions as ci
 
+# Get Character request requires the userId to send off. Return character info in the response
+
 
 def get():
     char_json = None
@@ -16,6 +18,8 @@ def get():
         return Response(char_json, mimetype="application/json", status=200)
     else:
         return Response("Something went wrong getting user characters", mimetype="application/json", status=400)
+
+# Character post request to create a character. Requires userId and char info, send new char back in the response
 
 
 def post():
@@ -33,6 +37,8 @@ def post():
         return Response(char_json, mimetype="application/json", status=200)
     else:
         return Response("Something went wrong adding a character", mimetype="application/json", status=400)
+
+# Chare delete endpoint requires userId and char name, returns charId in response to make things easy on front end
 
 
 def delete():

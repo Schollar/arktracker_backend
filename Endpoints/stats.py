@@ -2,12 +2,14 @@ from flask import request, Response
 import json
 import DbInteractions.userStats as us
 
+# Stats get request to get user stats info and send it back in response
+
 
 def get():
     tasks_json = None
     success = False
     try:
-        user_id = request.args.get('userId')
+        user_id = request.args['userId']
         success, task_list = us.get_stats(user_id)
         tasks_json = json.dumps(task_list, default=str)
     except:
