@@ -34,6 +34,7 @@ def get():
 
 def patch():
     user_json = None
+    salt = None
     success = False
     try:
         userId = request.json['userId']
