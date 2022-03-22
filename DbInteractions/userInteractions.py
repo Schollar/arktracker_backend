@@ -13,7 +13,7 @@ def get_users(userId):
         cursor.execute(
             "SELECT id, email, username FROM users WHERE id = ?", [userId])
         users = cursor.fetchone()
-        users = {
+        user = {
             'userId': users[0],
             'email': users[1],
             'username': users[2]
