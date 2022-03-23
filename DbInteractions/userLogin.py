@@ -13,6 +13,7 @@ def delete_login(loginToken):
         cursor.execute(
             "DELETE FROM user_session WHERE logintoken = ? ", [loginToken])
         conn.commit()
+        rowcount = cursor.rowcount
     except db.OperationalError:
         traceback.print_exc()
         print('Something went  wrong with the db!')
@@ -23,7 +24,10 @@ def delete_login(loginToken):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True
+    if(rowcount < 1):
+        return False
+    else:
+        return True
 
 # Function that creates a new user session(log a user in)
 

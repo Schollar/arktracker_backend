@@ -79,6 +79,7 @@ def get_password(password, email=None, username=None, logintoken=None):
 
 def get_userId(logintoken):
     conn, cursor = db_connect()
+    userId = None
     try:
         # Select statement to get userId based off logintoken.
         cursor.execute(
@@ -86,7 +87,6 @@ def get_userId(logintoken):
         # Save Id to variable, but since it defaults to a list, we then save the variable equal to the list index item 0. Disconnect and return userId
         userId = cursor.fetchone()
         userId = userId[0]
-
     except db.OperationalError:
         traceback.print_exc()
         print('Something went  wrong with the db!')
@@ -97,7 +97,10 @@ def get_userId(logintoken):
         traceback.print_exc()
         print("Something unexpected went wrong")
     db_disconnect(conn, cursor)
-    return userId
+    if(userId != None):
+        return userId
+    else:
+        return False
 
 
 def validate_login_token(logintoken):

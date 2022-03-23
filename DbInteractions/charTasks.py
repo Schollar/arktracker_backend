@@ -9,6 +9,7 @@ def get_tasks(charId):
     user_tasks['daily'] = []
     user_tasks['weekly'] = []
     conn, cursor = dbh.db_connect()
+    success = None
     try:
         # Select statement to get task information, as well as character info. Where statement checks to get char DAILY tasks of charId passed to it, where started at is greater than the current day minus one at 5am. Task type must be daily and completed at must be null so task is still in progress
         cursor.execute(
@@ -36,6 +37,7 @@ def get_tasks(charId):
                 'taskType': task[3],
                 'started_at': task[4]
             })
+        success = True
     except db.OperationalError:
         traceback.print_exc()
         print('Something went wrong with the db!')
@@ -46,7 +48,10 @@ def get_tasks(charId):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True, user_tasks
+    if(success):
+        return True, user_tasks
+    else:
+        return False, None
 
 
 def post_task(userId, taskname, taskdescription, tasktype, charId):
@@ -96,8 +101,10 @@ def post_task(userId, taskname, taskdescription, tasktype, charId):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True, task
-
+    if(task != None):
+        return True, task
+    else:
+        return False, None
 # Function to delete a task that is in progress. Requires a taskId. Returns true if rowcount is greater than 1
 
 
@@ -133,6 +140,7 @@ def patch_task(taskId):
         cursor.execute(
             "UPDATE task_actions SET completed_at = now() WHERE id = ?", [taskId])
         conn.commit()
+        rowcount = cursor.rowcount
         # Select statement to select the task just completed
         cursor.execute(
             "SELECT task_actions.id, name, description, type, userId from user_tasks inner join task_actions on user_taskId = user_tasks.id WHERE task_actions.id = ?", [
@@ -157,4 +165,7 @@ def patch_task(taskId):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True, task
+    if(rowcount < 1):
+        return False, None
+    else:
+        return True, task

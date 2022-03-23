@@ -9,6 +9,7 @@ def get_stats(userId):
     user_tasks['completed'] = []
     user_tasks['failed'] = []
     conn, cursor = dbh.db_connect()
+    success = None
     try:
         # Select statement to get tasks completed in the last 7 days.
         cursor.execute(
@@ -36,6 +37,7 @@ def get_stats(userId):
                 'started_at': task[4],
                 'completed_at': 'DNF'
             })
+            success = True
     except db.OperationalError:
         traceback.print_exc()
         print('Something went wrong with the db!')
@@ -46,4 +48,7 @@ def get_stats(userId):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True, user_tasks
+    if(success):
+        return True, user_tasks
+    else:
+        return False

@@ -28,7 +28,10 @@ def get_users(userId):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True, user
+    if(user != {}):
+        return True, user
+    else:
+        return False, None
 
 # Function that will change information based on if the values of the arguments are None or not, we check one by one and update one by one, which is less than ideal.
 
@@ -49,6 +52,7 @@ def patch_user(userId, email, username, password, salt):
             cursor.execute(
                 "UPDATE users SET password = ?, salt = ? WHERE users.ud = ?", [password, salt, userId])
             conn.commit()
+        rowcount = cursor.rowcount
         # After all updates and commits are done, a select statement runs to get the information on the newly updated user. Save the data to a variable and change it to an object before disconnecting and returning the data
         cursor.execute(
             "SELECT users.id, email, username FROM users WHERE users.id = ?", [userId])
@@ -68,7 +72,10 @@ def patch_user(userId, email, username, password, salt):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True, user
+    if(rowcount < 1):
+        return False, None
+    else:
+        return True, user
 
 # Function that will create a new user. Takes multiple arguments.
 
@@ -121,6 +128,7 @@ def delete_user(loginToken, pass_hash):
         cursor.execute(
             "DELETE users FROM users inner join user_session on users.id = user_session.userId WHERE password = ? and logintoken = ? ", [pass_hash, loginToken])
         conn.commit()
+        rowcount = cursor.rowcount
     except db.OperationalError:
         traceback.print_exc()
         print('Something went  wrong with the db!')
@@ -131,4 +139,7 @@ def delete_user(loginToken, pass_hash):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    return True
+    if(rowcount < 1):
+        return False
+    else:
+        return True

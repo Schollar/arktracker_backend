@@ -9,6 +9,7 @@ def get_characters(userId):
     characters = []
     conn, cursor = dbh.db_connect()
     user_characters = []
+    success = None
     try:
         cursor.execute(
             "SELECT characters.id, name, class, username FROM users inner join characters on characters.userId = users.id WHERE users.id = ?", [userId])
@@ -21,6 +22,7 @@ def get_characters(userId):
                 'class': char[2],
                 'username': char[3]
             })
+        success = True
     except db.OperationalError:
         traceback.print_exc()
         print('Something went wrong with the db!')
@@ -31,8 +33,12 @@ def get_characters(userId):
         traceback.print_exc()
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
-    # TODO Add logic here, always returns true?? Return array of user characters
-    return True, user_characters
+    if(success):
+        # TODO Add logic here, always returns true?? Return array of user characters
+        return True, user_characters
+    else:
+        return False, None
+
 
 # Function to add a character, takes in userId character name and class
 
@@ -69,7 +75,7 @@ def add_character(userId, charName, charClass):
     dbh.db_disconnect(conn, cursor)
     # If rowcount is less than one nothing happened, if not return the new character
     if(rowcount < 1):
-        return False
+        return False, None
     else:
         return True, character
 
@@ -102,7 +108,7 @@ def remove_character(userId, charName):
         print("Something unexpected went wrong")
     dbh.db_disconnect(conn, cursor)
     if(rowcount < 1):
-        return False
+        return False, None
     else:
         # Return the charId to make things easy on the front end to remove character from list
         return True, charId
