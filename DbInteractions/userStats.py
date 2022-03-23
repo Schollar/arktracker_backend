@@ -37,7 +37,7 @@ def get_stats(userId):
                 'started_at': task[4],
                 'completed_at': 'DNF'
             })
-            success = True
+        success = True
     except db.OperationalError:
         traceback.print_exc()
         print('Something went wrong with the db!')
