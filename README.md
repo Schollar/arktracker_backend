@@ -19,7 +19,7 @@ Backend project for Ark Tracker a to-do style app for the game of Lost Ark. Add/
 
 - setup a virtual enviroment
 
-- run 'python3.9 app.py testing' to run the API **NOTE** command can change depending on OS used, in my case I am using WSL
+- run 'python3.9 api.py testing' to run the API **NOTE** command can change depending on OS used, in my case I am using WSL
 
 It is reccommended to have PM2 for deployment to ensure your backend API is always up. It also comes with great error logging if your app is having issues.
 You will also need to ensure you have setup Apache or whatever you use to direct the requests to the backend properly
